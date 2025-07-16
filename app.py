@@ -2,20 +2,21 @@ from flask import Flask, render_template, request
 import pandas as pd
 import numpy as np
 import pickle
+import os
 
 app = Flask(__name__)
 
 # Load model and scaler
-model = pickle.load(open(r"D:\Internship\kia\models\house_price_SVR_model.pkl", "rb"))
-scaler = pickle.load(open(r"D:\Internship\kia\models\scaler.pkl", "rb"))
+model = pickle.load(open("models/house_price_SVR_model.pkl", "rb"))
+scaler = pickle.load(open("models/scaler.pkl", "rb"))
 
-# Load dataset
-dataset_path = r"D:\Internship\kia\dataset\house_prices.csv"
+# Load dataset (use relative path for deployment)
+dataset_path = "dataset/house_prices.csv"
 df = pd.read_csv(dataset_path)
 
-# Define only the model input columns (exclude "id" if not used in training)
+# Columns expected by model
 required_columns = [
-    "id","bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors",
+    "id", "bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors",
     "view", "grade", "sqft_above", "sqft_basement", "yr_built",
     "yr_renovated", "zipcode", "lat", "long", "sqft_living15", "sqft_lot15"
 ]
@@ -29,7 +30,6 @@ def predict():
     try:
         method = request.form.get("method")
 
-        # Get feature values
         if method == "dataset":
             row_index = int(request.form.get("row_index"))
             if row_index < 0 or row_index >= len(df):
@@ -56,5 +56,7 @@ def predict():
     except Exception as e:
         return render_template("index.html", prediction_text=f"❌ Error: {e}")
 
+# This runs the app on port assigned by environment (for Render, Railway, etc.)
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
