@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>House Price Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    function toggleInputs() {
+      const method = document.querySelector('input[name="method"]:checked').value;
+      document.getElementById("dataset-input").style.display = method === "dataset" ? "block" : "none";
+      document.getElementById("manual-input").style.display = method === "manual" ? "block" : "none";
+    }
+  </script>
+</head>
+<body>
+
+  <div class="container">
+    <h2>🏠 House Price Prediction</h2>
+
+    <form method="POST" action="/predict">
+      <div class="form-block radio-group">
+        <label>Select Input Method:</label>
+        <input type="radio" name="method" value="dataset" onclick="toggleInputs()" required> Use Dataset Row
+        <input type="radio" name="method" value="manual" onclick="toggleInputs()"> Enter Manually
+      </div>
+
+      <div id="dataset-input" style="display:none;">
+        <label>Row Index from CSV:</label>
+        <input type="number" name="row_index" min="0">
+      </div>
+
+      <div id="manual-input" style="display:none;">
+        <label>Id:</label><input type="number" name="id" step="1">
+        <label>Bedrooms:</label><input type="number" name="bedrooms" step="1">
+        <label>Bathrooms:</label><input type="number" name="bathrooms" step="0.25">
+        <label>Sqft Living:</label><input type="number" name="sqft_living">
+        <label>Sqft Lot:</label><input type="number" name="sqft_lot">
+        <label>Floors:</label><input type="number" name="floors" step="0.5">
+        <label>View:</label><input type="number" name="view">
+        <label>Grade:</label><input type="number" name="grade">
+        <label>Sqft Above:</label><input type="number" name="sqft_above">
+        <label>Sqft Basement:</label><input type="number" name="sqft_basement">
+        <label>Year Built:</label><input type="number" name="yr_built">
+        <label>Year Renovated:</label><input type="number" name="yr_renovated">
+        <label>Zipcode:</label><input type="number" name="zipcode">
+        <label>Latitude:</label><input type="number" name="lat" step="any">
+        <label>Longitude:</label><input type="number" name="long" step="any">
+        <label>Sqft Living 15:</label><input type="number" name="sqft_living15">
+        <label>Sqft Lot 15:</label><input type="number" name="sqft_lot15">
+      </div>
+
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction_text %}
+      <h3>{{ prediction_text }}</h3>
+    {% endif %}
+  </div>
+
+</body>
+</html>
